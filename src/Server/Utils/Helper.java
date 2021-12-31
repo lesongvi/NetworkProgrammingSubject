@@ -5,12 +5,11 @@
  */
 package Server.Utils;
 
+import CommonModels.TextProcessing;
 import java.io.UnsupportedEncodingException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.security.*;
+import java.util.*;
+import java.util.regex.*;
 import javax.crypto.spec.SecretKeySpec;
 
 /**
@@ -47,14 +46,12 @@ public class Helper {
     }
     
     public SecretKeySpec convertKey(String viKey) throws UnsupportedEncodingException, NoSuchAlgorithmException {
-        SecretKeySpec secretKey;
-        byte[] key;
+        MessageDigest sha = MessageDigest.getInstance("SHA-1");
+        byte[] key = viKey.getBytes("UTF-8");
 
-        MessageDigest sha = null;
-        key = viKey.getBytes("UTF-8");
-        sha = MessageDigest.getInstance("SHA-1");
         key = sha.digest(key);
         key = Arrays.copyOf(key, 16);
+
         return new SecretKeySpec(key, "AES");
     }
     
@@ -67,5 +64,22 @@ public class Helper {
             }
         }
         return str;
+    }
+    
+    public ArrayList<TextProcessing> charCount (String msg) {
+        msg = this.RemoveVNSign(msg);
+        char[] alp = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
+        String lastTxt = "";
+        long count = 0;
+        int total = 0;
+        ArrayList<TextProcessing> tpArr = new ArrayList<>();
+        for (char alStr : alp) {
+            count = msg.chars().filter(ch -> Character.toLowerCase((char)ch) == Character.toLowerCase(alStr)).count();
+            if (count != 0)
+                tpArr.add(new TextProcessing(alStr, (int) count));
+            total += count;
+        }
+        
+        return tpArr;
     }
 }

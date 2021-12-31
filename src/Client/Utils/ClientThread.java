@@ -5,7 +5,7 @@
  */
 package Client.Utils;
 
-import Server.Utils.Helper;
+import CommonModels.*;
 import java.io.*;
 import java.math.BigInteger;
 import java.net.*;
@@ -94,7 +94,6 @@ public class ClientThread extends Thread {
             publicKey = (RSAPublicKey) keyPair.getPublic();
             privateKey = (RSAPrivateKey) keyPair.getPrivate();
 
-            System.out.println("TEST");
             send(String.valueOf(publicKey), ipServer, PORT);
             
             this.Step1();
@@ -146,23 +145,6 @@ public class ClientThread extends Thread {
             kg.init(128);
             ClientSecretKey = this.helper.convertKey(this.aesKeyInput);
 
-            Matcher m = this.helper.InfoExtract(ServerRSAPublicKey);
-
-            if(!m.find()) {
-                System.err.println("Dữ liệu không hợp lệ!");
-                return;
-            }
-
-            String ServerModulus = m.group(1).trim();
-            String ServerExponent = m.group(2).trim();
-            
-            BigInteger modulos = new BigInteger(ServerModulus);
-            BigInteger exponent = new BigInteger(ServerExponent);
-
-            RSAPublicKeySpec rsaPublicKeySpec = new RSAPublicKeySpec(modulos, exponent);
-            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-            publicKeyOfServer = (RSAPublicKey) keyFactory.generatePublic(rsaPublicKeySpec);
-
             ClientAES = ClientSecretKey.getEncoded();
 
             Cipher c = Cipher.getInstance("RSA/ECB/OAEPWithSHA-256AndMGF1Padding");
@@ -176,7 +158,7 @@ public class ClientThread extends Thread {
             
             sendByte(encodedBytes, ipServer, PORT);
             this.startProcess();
-        } catch (NoSuchAlgorithmException | IOException | NoSuchPaddingException | InvalidKeyException | IllegalBlockSizeException | BadPaddingException | InvalidKeySpecException e) {
+        } catch (NoSuchAlgorithmException | IOException | NoSuchPaddingException | InvalidKeyException | IllegalBlockSizeException | BadPaddingException  e) {
             Logger.getLogger(ClientThread.class.getName()).log(Level.SEVERE, null, e);
         }
     }
@@ -189,9 +171,17 @@ public class ClientThread extends Thread {
         System.out.println(this.mainText);
         send(this.encrypt(this.mainText), ipServer, PORT);
         DatagramPacket packet = receive();
-        String ketqua = new String(packet.getData()).trim();
+        
+        String fromServerStr = this.decrypt(new String(packet.getData()).trim());
+        try (ByteArrayInputStream bis = new ByteArrayInputStream(Base64.getDecoder().decode(fromServerStr));
+            ObjectInputStream in = new ObjectInputStream(bis);) {
+            TextPack txtPack = (TextPack)in.readObject();
+            resultContent = this.helper.txtPackToText(txtPack);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(ClientThread.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
         lock.notify();
-        resultContent = this.decrypt(ketqua);
     }
  
     private String encrypt(String strToEncrypt) 

@@ -5,6 +5,7 @@
  */
 package Server;
 
+import CommonModels.TextPack;
 import Server.Utils.Helper;
 import java.io.*;
 import java.math.BigInteger;
@@ -25,25 +26,23 @@ import javax.crypto.spec.*;
 public class Server extends Thread {
     private ServerSocket serverSocket;
     private DatagramSocket clientSocket;
-    private String name;
     private RSAPrivateKey privateKey;
     private RSAPublicKey publicKey, publicKeyofClient;
     private KeyPair keyPair;
     private KeyPairGenerator keyPairGenerator;
     private int stepCounter = 0;
     private String message = null;
-    private Helper helper = new Helper();
-    private int keysize = 2048;
+    private final Helper helper = new Helper();
+    private final int keysize = 2048;
     private SecretKey clientAESKey;
-    
-    public static void main (String [] args) throws IOException {
-        new Server(7778).start();
-    }
    
     public Server(int port) throws IOException {
-        clientSocket = new DatagramSocket(port);
-        this.name = name;
-        new Thread(this).run();
+        this(new DatagramSocket(port));
+   }
+   
+    public Server(DatagramSocket sServer) throws IOException {
+        clientSocket = sServer;
+        new Thread(this).start();
    }
    
     @Override
@@ -68,7 +67,7 @@ public class Server extends Thread {
             while (true) {
                 switch (stepCounter) {
                     case 0:
-                        // Nhận khóa công khai của Client
+                        // Nhận khóa RSA công khai của Client
 
                         System.out.println("Bước: " + stepCounter);
 
@@ -147,8 +146,18 @@ public class Server extends Thread {
                             System.err.println("Dữ liệu không hợp lệ");
                             return;
                         }
+                        
+                        TextPack txtPack = new TextPack(this.helper.charCount(this.decrypt(message)));
+//                        txtPack
+                                
+                        try (ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                            ObjectOutputStream out = new ObjectOutputStream(bos)) {
+                            out.writeObject(txtPack);
+                            out.flush();
+                            byte[] yourBytes = bos.toByteArray();
 
-                        send(this.encrypt(this.charCount(this.decrypt(message))), host, port);
+                            send(this.encrypt(Base64.getEncoder().encodeToString(yourBytes)), host, port);
+                        }
 
                         stepCounter = 0;
                         System.out.println("\n\nSẵn sàng nhận yêu cầu mới!.\n\n");
@@ -179,24 +188,6 @@ public class Server extends Thread {
         DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
         clientSocket.receive(packet);
         return packet;
-    }
-    
-    private String charCount (String msg) {
-        msg = this.helper.RemoveVNSign(msg);
-        char[] alp = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
-        String lastTxt = "";
-        long count = 0;
-        int total = 0;
-        for (char alStr : alp) {
-            count = msg.chars().filter(ch -> Character.toLowerCase((char)ch) == Character.toLowerCase(alStr)).count();
-            if (count != 0)
-                lastTxt += "Chữ cái " + alStr + " xuất hiện " + count + " lần.\n";
-            total += count;
-        }
-        
-        lastTxt = "Tổng cộng có " + total + " chữ cái, trong đó:\n" + lastTxt;
-        
-        return lastTxt;
     }
  
     private String encrypt(String strToEncrypt) 
