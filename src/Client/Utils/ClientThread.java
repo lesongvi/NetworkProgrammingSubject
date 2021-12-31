@@ -176,7 +176,7 @@ public class ClientThread extends Thread {
         try (ByteArrayInputStream bis = new ByteArrayInputStream(Base64.getDecoder().decode(fromServerStr));
             ObjectInputStream in = new ObjectInputStream(bis);) {
             TextPack txtPack = (TextPack)in.readObject();
-            resultContent = this.helper.txtPackToText(txtPack);
+            resultContent = this.helper.txtPackToText(txtPack, true);
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(ClientThread.class.getName()).log(Level.SEVERE, null, ex);
         }

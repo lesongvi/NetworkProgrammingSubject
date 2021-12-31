@@ -5,6 +5,7 @@
  */
 package Server;
 
+import Server.Utils.ServerThread;
 import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.SocketException;
@@ -22,13 +23,13 @@ public class ServerRunner {
         try {
             server = new DatagramSocket(PORT);
         } catch (SocketException e) {
-            Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, e);
+            Logger.getLogger(ServerThread.class.getName()).log(Level.SEVERE, null, e);
         }
     }
     
     public void startServer() throws IOException {
         System.out.println("Server OK...");
-        new Server(server);
+        new ServerThread(server);
     }
     
     public static void main (String[] args) throws IOException {

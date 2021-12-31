@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Server;
+package Server.Utils;
 
 import CommonModels.TextPack;
 import Server.Utils.Helper;
@@ -23,7 +23,7 @@ import javax.crypto.spec.*;
  *
  * @author Nhóm 9
  */
-public class Server extends Thread {
+public class ServerThread extends Thread {
     private ServerSocket serverSocket;
     private DatagramSocket clientSocket;
     private RSAPrivateKey privateKey;
@@ -36,11 +36,11 @@ public class Server extends Thread {
     private final int keysize = 2048;
     private SecretKey clientAESKey;
    
-    public Server(int port) throws IOException {
+    public ServerThread(int port) throws IOException {
         this(new DatagramSocket(port));
    }
    
-    public Server(DatagramSocket sServer) throws IOException {
+    public ServerThread(DatagramSocket sServer) throws IOException {
         clientSocket = sServer;
         new Thread(this).start();
    }
@@ -168,7 +168,7 @@ public class Server extends Thread {
                 }
             }
         } catch (IOException | NoSuchAlgorithmException | InvalidKeyException | NoSuchPaddingException | IllegalBlockSizeException | BadPaddingException | InvalidKeySpecException | InvalidAlgorithmParameterException ex) {
-            Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ServerThread.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     
