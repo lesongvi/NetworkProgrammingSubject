@@ -67,6 +67,7 @@ public class ClientFrm extends javax.swing.JFrame {
         txtOutput.setBackground(new java.awt.Color(108, 122, 137));
         txtOutput.setColumns(20);
         txtOutput.setForeground(new java.awt.Color(255, 255, 255));
+        txtOutput.setLineWrap(true);
         txtOutput.setRows(5);
         jScrollPane3.setViewportView(txtOutput);
 
@@ -85,6 +86,7 @@ public class ClientFrm extends javax.swing.JFrame {
         txtInput.setBackground(new java.awt.Color(108, 122, 137));
         txtInput.setColumns(20);
         txtInput.setForeground(new java.awt.Color(255, 255, 255));
+        txtInput.setLineWrap(true);
         txtInput.setRows(5);
         jScrollPane4.setViewportView(txtInput);
 

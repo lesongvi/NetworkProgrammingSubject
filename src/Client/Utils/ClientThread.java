@@ -111,7 +111,6 @@ public class ClientThread extends Thread {
             ServerRSAPublicKey = txtContent;
 
             Matcher m = this.helper.InfoExtract(txtContent);
-            System.out.println(txtContent);
 
             if(!m.find()) {
                 System.err.println("Dữ liệu không hợp lệ!");
@@ -147,7 +146,7 @@ public class ClientThread extends Thread {
 
             ClientAES = ClientSecretKey.getEncoded();
 
-            Cipher c = Cipher.getInstance("RSA/ECB/OAEPWithSHA-256AndMGF1Padding");
+            Cipher c = Cipher.getInstance("RSA");
             
             assert c != null;
             c.init(Cipher.ENCRYPT_MODE, publicKeyOfServer);
@@ -168,7 +167,6 @@ public class ClientThread extends Thread {
 
         receive();
 
-        System.out.println(this.mainText);
         send(this.encrypt(this.mainText), ipServer, PORT);
         DatagramPacket packet = receive();
         
@@ -187,12 +185,12 @@ public class ClientThread extends Thread {
     private String encrypt(String strToEncrypt) 
     {
         try {
-            Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+            Cipher cipher = Cipher.getInstance("AES");
             cipher.init(Cipher.ENCRYPT_MODE, ClientSecretKey);
             return Base64.getEncoder().encodeToString(cipher.doFinal(strToEncrypt.getBytes("UTF-8")));
         } 
         catch (UnsupportedEncodingException | InvalidKeyException | NoSuchAlgorithmException | BadPaddingException | IllegalBlockSizeException | NoSuchPaddingException e) {
-            System.out.println("Lỗi khi cố gắng mã hóa: " + e.toString());
+            System.out.println("Có lỗi trong quá trình mã hóa: " + e.toString());
         }
         return null;
     }
@@ -200,12 +198,12 @@ public class ClientThread extends Thread {
     private String decrypt(String strToDecrypt) 
     {
         try {
-            Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5PADDING");
+            Cipher cipher = Cipher.getInstance("AES");
             cipher.init(Cipher.DECRYPT_MODE, ClientSecretKey);
             return new String(cipher.doFinal(Base64.getDecoder().decode(strToDecrypt)));
         } 
         catch (InvalidKeyException | NoSuchAlgorithmException | BadPaddingException | IllegalBlockSizeException | NoSuchPaddingException e) {
-            System.out.println("Lỗi khi cố gắng giải mã: " + e.toString());
+            System.out.println("Có lỗi trong quá trình giải mã: " + e.toString());
         }
         return null;
     }

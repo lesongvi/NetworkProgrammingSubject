@@ -68,15 +68,12 @@ public class ServerThread extends Thread {
                 switch (stepCounter) {
                     case 0:
                         // Nhận khóa RSA công khai của Client
-
                         System.out.println("Bước: " + stepCounter);
 
                         packet = receive();
                         host = packet.getAddress();
                         port = packet.getPort();
                         message = new String(packet.getData()).trim();
-                        
-                        System.out.println(message);
                         
                         if (message == null) return;
 
@@ -119,11 +116,9 @@ public class ServerThread extends Thread {
                         byte[] EncryptedClientAES = packet.getData();
                         
                         EncryptedClientAES = Arrays.copyOf(EncryptedClientAES, 256);
-                        System.out.println(EncryptedClientAES.length);
 
-                        Cipher cipher = Cipher.getInstance("RSA/ECB/OAEPPadding");
-                        OAEPParameterSpec oaepParams = new OAEPParameterSpec("SHA-256", "MGF1", new MGF1ParameterSpec("SHA-1"), PSource.PSpecified.DEFAULT);
-                        cipher.init(Cipher.DECRYPT_MODE, privateKey, oaepParams);
+                        Cipher cipher = Cipher.getInstance("RSA");
+                        cipher.init(Cipher.DECRYPT_MODE, privateKey);
                         byte[] decryptedAESKeyOfClient = cipher.doFinal(EncryptedClientAES);
 
                         clientAESKey = (SecretKey) new SecretKeySpec(decryptedAESKeyOfClient, 0, decryptedAESKeyOfClient.length, "AES");
@@ -148,7 +143,6 @@ public class ServerThread extends Thread {
                         }
                         
                         TextPack txtPack = new TextPack(this.helper.charCount(this.decrypt(message)));
-//                        txtPack
                                 
                         try (ByteArrayOutputStream bos = new ByteArrayOutputStream();
                             ObjectOutputStream out = new ObjectOutputStream(bos)) {
@@ -167,7 +161,7 @@ public class ServerThread extends Thread {
                         break;
                 }
             }
-        } catch (IOException | NoSuchAlgorithmException | InvalidKeyException | NoSuchPaddingException | IllegalBlockSizeException | BadPaddingException | InvalidKeySpecException | InvalidAlgorithmParameterException ex) {
+        } catch (IOException | NoSuchAlgorithmException | InvalidKeyException | NoSuchPaddingException | IllegalBlockSizeException | BadPaddingException | InvalidKeySpecException  ex) {
             Logger.getLogger(ServerThread.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -193,12 +187,12 @@ public class ServerThread extends Thread {
     private String encrypt(String strToEncrypt) 
     {
         try {
-            Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+            Cipher cipher = Cipher.getInstance("AES");
             cipher.init(Cipher.ENCRYPT_MODE, clientAESKey);
             return Base64.getEncoder().encodeToString(cipher.doFinal(strToEncrypt.getBytes("UTF-8")));
         } 
         catch (UnsupportedEncodingException | InvalidKeyException | NoSuchAlgorithmException | BadPaddingException | IllegalBlockSizeException | NoSuchPaddingException e) {
-            System.out.println("Error while encrypting: " + e.toString());
+            System.out.println("Có lỗi trong quá trình mã hóa: " + e.toString());
         }
         return null;
     }
@@ -206,12 +200,12 @@ public class ServerThread extends Thread {
     private String decrypt(String strToDecrypt) 
     {
         try {
-            Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5PADDING");
+            Cipher cipher = Cipher.getInstance("AES");
             cipher.init(Cipher.DECRYPT_MODE, clientAESKey);
             return new String(cipher.doFinal(Base64.getDecoder().decode(strToDecrypt)));
         } 
         catch (InvalidKeyException | NoSuchAlgorithmException | BadPaddingException | IllegalBlockSizeException | NoSuchPaddingException e) {
-            System.out.println("Error while decrypting: " + e.toString());
+            System.out.println("Có lỗi trong quá trình giải mã: " + e.toString());
         }
         return null;
     }
