@@ -14,7 +14,7 @@ import java.util.logging.Logger;
 
 /**
  *
- * @author Nhóm 9
+ * @author Nhóm 9 - Lê Song Vĩ - Nguyễn Hữu Minh
  */
 public class ServerRunner {
     static final int PORT = 7778;

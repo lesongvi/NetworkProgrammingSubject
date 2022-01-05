@@ -14,11 +14,10 @@ import javax.crypto.spec.SecretKeySpec;
 
 /**
  *
- * @author Nhóm 9
+ * @author Nhóm 9 - Lê Song Vĩ - Nguyễn Hữu Minh
  */
 public class Helper {
-//    private String regx = "modulus:\\s*(.*)(.[\\r\\n\\s]*)public exponent:\\s*(.*)";
-    private String regx = "modulus:(?:.[\\\\r\\\\n\\\\s]*)(.[0-9]*)(?:\\R(?:\\s*))public exponent:(?:.[\\\\r\\\\n\\\\s]*)(.[0-9]*)";
+    private final String regx = "modulus:(?:.[\\\\r\\\\n\\\\s]*)(.[0-9]*)(?:\\R(?:\\s*))public exponent:(?:.[\\\\r\\\\n\\\\s]*)(.[0-9]*)";
     private final String[] VietnameseSigns = new String[]
     {
         "aAeEoOuUiIdDyY",
@@ -71,13 +70,11 @@ public class Helper {
         char[] alp = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
         String lastTxt = "";
         long count = 0;
-        int total = 0;
         ArrayList<TextProcessing> tpArr = new ArrayList<>();
         for (char alStr : alp) {
             count = msg.chars().filter(ch -> Character.toLowerCase((char)ch) == Character.toLowerCase(alStr)).count();
             if (count != 0)
                 tpArr.add(new TextProcessing(alStr, (int) count));
-            total += count;
         }
         
         return tpArr;

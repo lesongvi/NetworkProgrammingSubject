@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 /**
  *
- * @author ADMIN
+ * @author Nhóm 9 - Lê Song Vĩ - Nguyễn Hữu Minh
  */
 public class TextPack implements Serializable {
     private ArrayList<TextProcessing> TxtPArray;

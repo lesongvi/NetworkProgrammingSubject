@@ -11,7 +11,7 @@ import javax.swing.JOptionPane;
 
 /**
  *
- * @author ADMIN
+ * @author Nhóm 9 - Lê Song Vĩ - Nguyễn Hữu Minh
  */
 public class ClientFrm extends javax.swing.JFrame {
 
@@ -189,6 +189,13 @@ public class ClientFrm extends javax.swing.JFrame {
 
     private void btnStartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStartActionPerformed
         try {
+            if (this.txtInput.getText().length() > 65507) {
+                JOptionPane.showMessageDialog(null, "Giá trị không thể vượt quá 65507 ký tự");
+                return;
+            } else if (this.txtInput.getText().length() == 0) {
+                JOptionPane.showMessageDialog(null, "Giá trị đầu vào không hợp lệ!");
+                return;
+            }
             this.processData();
         } catch (IOException | InterruptedException ex) {
             JOptionPane.showMessageDialog(null, "Đã có lỗi xảy ra!\n\n" + ex.getMessage());
@@ -201,8 +208,7 @@ public class ClientFrm extends javax.swing.JFrame {
 
     
     private void processData () throws IOException, InterruptedException {
-        Integer lock = 1;
-        ClientThread wfr = new ClientThread(lock);
+        ClientThread wfr = new ClientThread();
         wfr.setMainText(this.txtInput.getText());
         wfr.setAesKey(this.txtPassword.getText());
         wfr.start();

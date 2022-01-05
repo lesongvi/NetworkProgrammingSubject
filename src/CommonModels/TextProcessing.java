@@ -9,7 +9,7 @@ import java.io.Serializable;
 
 /**
  *
- * @author Nhóm 9
+ * @author Nhóm 9 - Lê Song Vĩ - Nguyễn Hữu Minh
  */
 public class TextProcessing implements Serializable {
     private char Character;

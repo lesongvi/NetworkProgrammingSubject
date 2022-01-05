@@ -7,19 +7,17 @@ package Client.Utils;
 
 import CommonModels.*;
 import java.io.UnsupportedEncodingException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import java.security.*;
 import java.util.Arrays;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.regex.*;
 import javax.crypto.spec.SecretKeySpec;
 
 /**
  *
- * @author ADMIN
+ * @author Nhóm 9 - Lê Song Vĩ - Nguyễn Hữu Minh
  */
 public class Helper {
-    private String regx = "modulus:(?:.[\\\\r\\\\n\\\\s]*)(.[0-9]*)(?:\\R(?:\\s*))public exponent:(?:.[\\\\r\\\\n\\\\s]*)(.[0-9]*)";
+    private final String regx = "modulus:(?:.[\\\\r\\\\n\\\\s]*)(.[0-9]*)(?:\\R(?:\\s*))public exponent:(?:.[\\\\r\\\\n\\\\s]*)(.[0-9]*)";
     
     public Helper () { }
 
@@ -43,8 +41,11 @@ public class Helper {
         for (TextProcessing txtPItem : txtpack.getTextPack()) {
             lastStr += "Chữ cái " + txtPItem.getChar() + " xuất hiện " + txtPItem.getATime() + " lần\n";
         }
+        int total = txtpack.getTextPack().stream().mapToInt(ch -> ch.getATime()).sum();
         if (enableTotal)
-            lastStr = "Tổng cộng có " + txtpack.getTextPack().stream().mapToInt(ch -> ch.getATime()).sum() + " chữ cái trong đầu vào, chi tiết bao gồm:\n" + lastStr;
+            lastStr = "Tổng cộng có " + total + " chữ cái trong đầu vào, chi tiết bao gồm:\n" + lastStr;
+        if (total == 0)
+            lastStr = "Không có chữ cái nào trong văn bản đầu vào!";
         return lastStr.trim();
     }
 }

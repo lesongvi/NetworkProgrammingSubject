@@ -6,7 +6,6 @@
 package Server.Utils;
 
 import CommonModels.TextPack;
-import Server.Utils.Helper;
 import java.io.*;
 import java.math.BigInteger;
 import java.net.*;
@@ -21,10 +20,9 @@ import javax.crypto.spec.*;
 
 /**
  *
- * @author Nhóm 9
+ * @author Nhóm 9 - Lê Song Vĩ - Nguyễn Hữu Minh
  */
 public class ServerThread extends Thread {
-    private ServerSocket serverSocket;
     private DatagramSocket clientSocket;
     private RSAPrivateKey privateKey;
     private RSAPublicKey publicKey, publicKeyofClient;
@@ -148,9 +146,9 @@ public class ServerThread extends Thread {
                             ObjectOutputStream out = new ObjectOutputStream(bos)) {
                             out.writeObject(txtPack);
                             out.flush();
-                            byte[] yourBytes = bos.toByteArray();
+                            byte[] yBytes = bos.toByteArray();
 
-                            send(this.encrypt(Base64.getEncoder().encodeToString(yourBytes)), host, port);
+                            send(this.encrypt(Base64.getEncoder().encodeToString(yBytes)), host, port);
                         }
 
                         stepCounter = 0;

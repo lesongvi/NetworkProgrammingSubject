@@ -19,20 +19,16 @@ import javax.crypto.*;
 
 /**
  *
- * @author Nhóm 9
+ * @author Nhóm 9 - Lê Song Vĩ - Nguyễn Hữu Minh
  */
 public class ClientThread extends Thread {
     private RSAPrivateKey privateKey;
     private RSAPublicKey publicKey;
     private SecretKey ClientSecretKey;
-    private String ServerRSAPublicKey = null;
     private KeyFactory keyFactory;
     private RSAPublicKey publicKeyOfServer;
-    private Helper helper = new Helper();
-    private byte[] ClientAES;
+    private final Helper helper = new Helper();
     private final int keysize = 2048;
-    private PrintWriter out = null;
-    private Scanner in = null;
     private DatagramSocket client = null;
     final int PORT = 7778;
     private InetAddress ipServer;
@@ -107,8 +103,6 @@ public class ClientThread extends Thread {
         try {
             DatagramPacket packet = receive();
             String txtContent = new String(packet.getData()).trim();
-            
-            ServerRSAPublicKey = txtContent;
 
             Matcher m = this.helper.InfoExtract(txtContent);
 
@@ -143,8 +137,6 @@ public class ClientThread extends Thread {
             KeyGenerator kg = KeyGenerator.getInstance("AES");
             kg.init(128);
             ClientSecretKey = this.helper.convertKey(this.aesKeyInput);
-
-            ClientAES = ClientSecretKey.getEncoded();
 
             Cipher c = Cipher.getInstance("RSA");
             
@@ -206,6 +198,35 @@ public class ClientThread extends Thread {
             System.out.println("Có lỗi trong quá trình giải mã: " + e.toString());
         }
         return null;
+    }
+    
+    private void sendByPieces (byte[] chuoi, String cmd, InetAddress host, int port, String filename) throws IOException {
+        byte[] buffer = chuoi;
+        int POFZ = 65507;
+        BufferedInputStream bis = new BufferedInputStream(new ByteArrayInputStream(buffer));
+        int pof = (int) (buffer.length / POFZ);
+        int lastByteLength = (int) (buffer.length % POFZ);
+        byte[] bytePart = new byte[POFZ];
+        
+        if (lastByteLength > 0) {
+            pof++;
+        }
+        
+        send(cmd + "@" + filename + " " + buffer.length + " " + pof, host, port);
+        
+        byte[][] fileBytess = new byte[pof][POFZ];
+        int count = 0;
+        while (bis.read(bytePart, 0, POFZ) > 0) {
+            int tmpCount = count++;
+            fileBytess[tmpCount] = new byte[bytePart.length];
+            fileBytess[tmpCount] = bytePart;
+            bytePart = new byte[POFZ];
+        }
+        
+        System.out.println(count);
+        for (int i = 0; i < count; i++) {
+            sendByte (fileBytess[i], host, port);
+        }
     }
     
     private void send (String chuoi, InetAddress host, int port) throws IOException {
