@@ -10,3 +10,6 @@ Tập tin báo cáo docx, video demo, slide pptx được lưu trong thư mục 
 
 ## Hình ảnh chương trình
 <img src="https://cdn.notevn.com/i6bvSZL5J.png" />
+
+## Sơ đồ mô tả chương trình
+<img src="https://raw.githubusercontent.com/lesongvi/NetworkProgrammingSubject/main/resources/networkprogramming.png" />
